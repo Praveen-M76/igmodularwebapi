@@ -1,0 +1,6 @@
+@ModularPluginWebApi_HostAddress = http://localhost:5276
+
+GET {{ModularPluginWebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
