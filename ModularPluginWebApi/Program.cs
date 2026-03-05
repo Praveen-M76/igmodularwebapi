@@ -25,6 +25,10 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
+app.MapGet("/", () => Results.Redirect("/swagger"));
+
 app.MapControllers();
 
-app.Run();
+/* Render PORT FIX */
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+app.Run($"http://0.0.0.0:{port}");
