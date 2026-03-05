@@ -6,25 +6,16 @@ namespace ModularPluginWebApi.Controllers
     [Route("api/[controller]")]
     public class ExtraController : ControllerBase
     {
-        // GET: /api/Extra/hello
         [HttpGet("hello")]
         public IActionResult Hello()
         {
             return Ok("Hello from Extra API");
         }
 
-        // GET: /api/Extra/status
         [HttpGet("status")]
         public IActionResult Status()
         {
-            return Ok("API Running Successfully");
-        }
-
-        // GET: /api/Extra/time
-        [HttpGet("time")]
-        public IActionResult GetTime()
-        {
-            return Ok(DateTime.Now);
+            return Ok("API is running");
         }
     }
 }

@@ -6,17 +6,26 @@ namespace ModularPluginWebApi.Controllers
     [Route("api/[controller]")]
     public class UsersController : ControllerBase
     {
+        // GET: /api/Users/getusers
         [HttpGet("getusers")]
         public IActionResult GetUsers()
         {
-            var users = new[]
+            var users = new string[]
             {
-                new { Id = 1, Name = "Naveen" },
-                new { Id = 2, Name = "Kumar" },
-                new { Id = 3, Name = "Arun" }
+                "Naveen",
+                "Arun",
+                "Kumar",
+                "Siva"
             };
 
             return Ok(users);
+        }
+
+        // GET: /api/Users/count
+        [HttpGet("count")]
+        public IActionResult GetUserCount()
+        {
+            return Ok(new { Count = 4 });
         }
     }
 }

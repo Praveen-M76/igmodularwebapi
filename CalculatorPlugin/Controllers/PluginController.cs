@@ -6,21 +6,12 @@ namespace ModularPluginWebApi.Controllers
     [Route("api/[controller]")]
     public class PluginController : ControllerBase
     {
-        // GET: /api/Plugin
         [HttpGet]
         public IActionResult GetPlugins()
         {
-            var plugins = new string[]
-            {
-                "Extra",
-                "Users",
-                "Future Plugins"
-            };
-
-            return Ok(plugins);
+            return Ok("Plugin API is working");
         }
 
-        // GET: /api/Plugin/status
         [HttpGet("status")]
         public IActionResult Status()
         {
