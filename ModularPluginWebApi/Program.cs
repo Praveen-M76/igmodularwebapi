@@ -3,15 +3,13 @@ using Microsoft.AspNetCore.Mvc.ApplicationParts;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+var mvcBuilder = builder.Services.AddControllers();
 
 /* Load Plugins */
 var pluginPath = Path.Combine(Directory.GetCurrentDirectory(), "Plugins");
 
 if (Directory.Exists(pluginPath))
 {
-    var mvcBuilder = builder.Services.AddControllers();
-
     foreach (var file in Directory.GetFiles(pluginPath, "*.dll"))
     {
         var assembly = Assembly.LoadFrom(file);
@@ -31,14 +29,12 @@ app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "ModularPluginWebApi v1");
 
-    // This makes Swagger open at /index.html
-    c.RoutePrefix = "index";
+    // Swagger root la open aagum
+    c.RoutePrefix = string.Empty;
 
-    // This makes URL change when you click controller/endpoint
+    // Click panna URL hash change aagum
     c.EnableDeepLinking();
 });
-
-app.MapGet("/", () => Results.Redirect("/index.html"));
 
 app.MapControllers();
 
