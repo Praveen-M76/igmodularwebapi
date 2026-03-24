@@ -10,7 +10,7 @@ namespace ModularPluginWebApi.Controllers
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginModel model)
         {
-            if (model.Username == "admin" && model.Password == "admin123")
+            if (model.Username == "Praveen" && model.Password == "7667")
             {
                 return Ok(new
                 {
