@@ -2,36 +2,34 @@
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services
+// Add controllers
 builder.Services.AddControllers();
 
-// Swagger configuration
+// Swagger
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options =>
+builder.Services.AddSwaggerGen(c =>
 {
-    options.SwaggerDoc("v1", new OpenApiInfo
+    c.SwaggerDoc("v1", new OpenApiInfo
     {
         Title = "IG Modular Web API",
-        Version = "v1",
-        Description = "Plugin Based Web API"
+        Version = "v1"
     });
 });
 
 var app = builder.Build();
 
-// Enable Swagger
+// Enable swagger
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "IG Modular Web API v1");
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "IG Modular Web API V1");
 });
 
-// Redirect root URL to Swagger
+// Redirect root to swagger
 app.MapGet("/", () => Results.Redirect("/swagger/index.html"));
 
-// Map controllers
 app.MapControllers();
 
-// Render port configuration
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-app.Run($"[http://0.0.0.0:{port}](http://0.0.0.0:{port})");
+/* Render PORT FIX */
+var port = Environment.GetEnvironmentVariable("PORT") ?? "10000";
+app.Run($"http://0.0.0.0:{port}");
