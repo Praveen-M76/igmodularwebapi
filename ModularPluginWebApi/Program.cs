@@ -15,12 +15,12 @@ builder.Services.AddSwaggerGen(c =>
         Version = "v1"
     });
 
-    // JWT Bearer setup for Authorize button
+    // Bearer token support in Swagger
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
         Type = SecuritySchemeType.Http,
-        Scheme = "Bearer",
+        Scheme = "bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
         Description = "Enter token like: Bearer {your_token}"
@@ -37,21 +37,22 @@ builder.Services.AddSwaggerGen(c =>
                     Id = "Bearer"
                 }
             },
-            new string[] {}
+            Array.Empty<string>()
         }
     });
 });
 
 var app = builder.Build();
 
+// Swagger username/password protection
+app.UseMiddleware<SwaggerBasicAuthMiddleware>();
+
+// Enable Swagger
 app.UseSwagger();
 
-// Swagger UI configuration
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "IG Modular Web API v1");
-
-    // IMPORTANT → Swagger opens at root URL
     c.RoutePrefix = string.Empty;
 });
 
@@ -60,5 +61,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 // Render port configuration
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+var port = Environment.GetEnvironmentVariable("PORT") ?? "10000";
 app.Run($"http://0.0.0.0:{port}");
