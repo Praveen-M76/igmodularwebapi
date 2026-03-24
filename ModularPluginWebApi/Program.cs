@@ -1,65 +1,47 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using System.Reflection;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services
 builder.Services.AddControllers();
 
-// Swagger configuration
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
+/* Load Plugins */
+var pluginPath = Path.Combine(Directory.GetCurrentDirectory(), "Plugins");
+
+if (Directory.Exists(pluginPath))
 {
-    c.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "IG Modular Web API",
-        Version = "v1"
-    });
+    var mvcBuilder = builder.Services.AddControllers();
 
-    // Bearer token support in Swagger
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    foreach (var file in Directory.GetFiles(pluginPath, "*.dll"))
     {
-        Name = "Authorization",
-        Type = SecuritySchemeType.Http,
-        Scheme = "bearer",
-        BearerFormat = "JWT",
-        In = ParameterLocation.Header,
-        Description = "Enter token like: Bearer {your_token}"
-    });
+        var assembly = Assembly.LoadFrom(file);
+        mvcBuilder.PartManager.ApplicationParts.Add(new AssemblyPart(assembly));
+    }
+}
 
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            Array.Empty<string>()
-        }
-    });
-});
+/* Swagger */
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Swagger username/password protection
-app.UseMiddleware<SwaggerBasicAuthMiddleware>();
-
-// Enable Swagger
 app.UseSwagger();
 
 app.UseSwaggerUI(c =>
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "IG Modular Web API v1");
-    c.RoutePrefix = string.Empty;
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "ModularPluginWebApi v1");
+
+    // This makes Swagger open at /index.html
+    c.RoutePrefix = "index";
+
+    // This makes URL change when you click controller/endpoint
+    c.EnableDeepLinking();
 });
 
-app.UseAuthorization();
+app.MapGet("/", () => Results.Redirect("/index.html"));
 
 app.MapControllers();
 
-// Render port configuration
-var port = Environment.GetEnvironmentVariable("PORT") ?? "10000";
+/* Render PORT FIX */
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 app.Run($"http://0.0.0.0:{port}");
