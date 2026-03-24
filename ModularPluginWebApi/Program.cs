@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Mvc.ApplicationParts;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add Controllers
 builder.Services.AddControllers();
 
+// Load plugin DLLs (if any exist in Plugins folder)
 var pluginPath = Path.Combine(Directory.GetCurrentDirectory(), "Plugins");
 
 if (Directory.Exists(pluginPath))
@@ -13,29 +15,37 @@ if (Directory.Exists(pluginPath))
     {
         var assembly = Assembly.LoadFrom(file);
 
-        builder.Services
-            .AddControllers()
+        builder.Services.AddControllers()
             .PartManager.ApplicationParts.Add(new AssemblyPart(assembly));
     }
 }
 
+// Swagger services
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+// Enable static files (required for swagger-login.js)
+app.UseStaticFiles();
+
+// Enable Swagger
 app.UseSwagger();
 
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "ModularPluginWebApi v1");
-    c.EnableDeepLinking();   // ⭐ Important line
+
+    // Inject custom JavaScript for login popup
+    c.InjectJavascript("/swagger-login.js");
 });
 
-app.MapGet("/", () => Results.Redirect("/swagger"));
+// Redirect root URL to Swagger
+app.MapGet("/", () => Results.Redirect("/swagger/index.html"));
 
+// Map controllers
 app.MapControllers();
 
-/* Render PORT FIX */
+// Render deployment port fix
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 app.Run($"http://0.0.0.0:{port}");

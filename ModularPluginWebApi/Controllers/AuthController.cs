@@ -21,7 +21,8 @@ namespace ModularPluginWebApi.Controllers
 
             return Unauthorized(new
             {
-                message = "Invalid username or password"
+                message = "Invalid username or password",
+                access = false
             });
         }
     }
