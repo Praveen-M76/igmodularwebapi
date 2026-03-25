@@ -1,57 +1,27 @@
 ﻿(function () {
+    function applyToken() {
+        const token = localStorage.getItem("jwtToken");
 
-    let isLoggedIn = false;
+        if (!token) return false;
+        if (!window.ui) return false;
+        if (typeof window.ui.preauthorizeApiKey !== "function") return false;
 
-    async function loginPopup() {
-
-        const username = prompt("Enter Username:");
-        if (!username) return false;
-
-        const password = prompt("Enter Password:");
-        if (!password) return false;
-
-        const response = await fetch("/api/auth/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                username: username,
-                password: password
-            })
-        });
-
-        const data = await response.json();
-
-        if (data.access === true) {
-            alert("Login successful");
-            isLoggedIn = true;
+        try {
+            window.ui.preauthorizeApiKey("Bearer", "Bearer " + token);
             return true;
+        } catch (e) {
+            return false;
         }
-
-        alert("Invalid username or password");
-        return false;
     }
 
-    document.addEventListener("click", async function (e) {
+    let count = 0;
 
-        const operation = e.target.closest(".opblock-summary");
+    const timer = setInterval(() => {
+        count++;
+        const done = applyToken();
 
-        if (!operation) return;
-
-        if (isLoggedIn) return;
-
-        e.preventDefault();
-        e.stopPropagation();
-
-        const ok = await loginPopup();
-
-        if (ok) {
-            setTimeout(() => {
-                operation.click();
-            }, 100);
+        if (done || count > 40) {
+            clearInterval(timer);
         }
-
-    }, true);
-
+    }, 500);
 })();
