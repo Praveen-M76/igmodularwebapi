@@ -1,31 +1,33 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ModularPluginWebApi.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
+    [ApiController]
+    [Authorize]
     public class UsersController : ControllerBase
     {
-        // GET: /api/Users/getusers
-        [HttpGet("getusers")]
-        public IActionResult GetUsers()
+        [HttpGet("profile")]
+        public IActionResult GetProfile()
         {
-            var users = new string[]
+            return Ok(new
             {
-                "Naveen",
-                "Arun",
-                "Kumar",
-                "Siva"
-            };
-
-            return Ok(users);
+                message = "Authorized access successful",
+                user = User.Identity?.Name,
+                time = DateTime.Now
+            });
         }
 
-        // GET: /api/Users/count
-        [HttpGet("count")]
-        public IActionResult GetUserCount()
+        [HttpGet("parameters")]
+        public IActionResult GetParameters()
         {
-            return Ok(new { Count = 4 });
+            return Ok(new
+            {
+                param1 = "Value 1",
+                param2 = "Value 2",
+                param3 = "Value 3"
+            });
         }
     }
 }
